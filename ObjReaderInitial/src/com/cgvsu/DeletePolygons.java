@@ -1,0 +1,72 @@
+package com.cgvsu;
+
+import com.cgvsu.math.Vector3f;
+import com.cgvsu.model.Model;
+import com.cgvsu.model.Polygon;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+public class DeletePolygons {
+    public static void deletePolygons(Integer[] numbers, Model model, boolean freeVertices) {
+        if (numbers.length > model.polygons.size()) {
+            throw new RuntimeException("More polygons are being deleted than their number");
+        }
+
+        if (freeVertices) {
+            deleteWith(numbers, model);
+        } else {
+            deleteWithout(numbers, model.polygons);
+        }
+    }
+
+    private static void deleteWithout(Integer[] numbers, ArrayList<Polygon> polygons) {
+        Arrays.sort(numbers, Collections.reverseOrder());
+        for (int i: numbers) {
+            polygons.remove(i);
+        }
+    }
+
+    private static void deleteWith(Integer[] numbers, Model model) {
+        deleteWithout(numbers, model.polygons);
+        Integer[] freeVertices = findFreeVertices(model.polygons, model.vertices.size());
+        Arrays.sort(freeVertices, Collections.reverseOrder());
+        deleteFreeVertices(model.vertices, freeVertices);
+        reindexing(model.polygons, freeVertices);
+    }
+
+    private static Integer[] findFreeVertices(ArrayList<Polygon> polygons, int countOfVertices) {
+        Integer[] points = new Integer[countOfVertices];
+        for (Polygon polygon: polygons) {
+            for (Integer i: polygon.getVertexIndices()) {
+                points[i] = 1;
+            }
+        }
+        ArrayList<Integer> freeVerticesIndexes = new ArrayList<>();
+        for (int i = 0; i < points.length; i++) {
+            if (points[i] == null) {
+                freeVerticesIndexes.add(i);
+            }
+        }
+        return freeVerticesIndexes.toArray(new Integer[0]);
+    }
+
+    private static void deleteFreeVertices(ArrayList<Vector3f> vertices, Integer[] freeVerticesIndexes) {
+        for (int i: freeVerticesIndexes) {
+            vertices.remove(i);
+        }
+    }
+
+    private static void reindexing(ArrayList<Polygon> polygons, Integer[] freeVerticesIndexes) {
+        for (Polygon polygon: polygons) {
+            for (Integer i: polygon.getVertexIndices()) {
+                for (Integer j: freeVerticesIndexes) {
+                    if (i > j) {
+                        i--;
+                    }
+                }
+            }
+        }
+    }
+}
