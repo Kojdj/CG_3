@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class DeletePolygons {
+
     public static void deletePolygons(Integer[] numbers, Model model, boolean freeVertices) {
         if (numbers.length > model.polygons.size()) {
             throw new RuntimeException("More polygons are being deleted than their number");
@@ -60,10 +61,11 @@ public class DeletePolygons {
 
     private static void reindexing(ArrayList<Polygon> polygons, Integer[] freeVerticesIndexes) {
         for (Polygon polygon: polygons) {
-            for (Integer i: polygon.getVertexIndices()) {
+            ArrayList<Integer> VertexIndices = polygon.getVertexIndices();
+            for (int i = 0; i < VertexIndices.size(); i++) {
                 for (Integer j: freeVerticesIndexes) {
-                    if (i > j) {
-                        i--;
+                    if (VertexIndices.get(i) > j) {
+                        VertexIndices.set(i, VertexIndices.get(i) - 1);
                     }
                 }
             }

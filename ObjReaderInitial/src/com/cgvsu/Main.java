@@ -10,8 +10,11 @@ import java.nio.file.Path;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        Path fileName = null;
 
-        Path fileName = Path.of("ObjReaderInitial/3DModels/Faceform/WrapHead.obj");
+        if (args[0].equals("-i")) {
+            fileName = Path.of(args[1]);
+        }
         String fileContent = Files.readString(fileName);
 
         System.out.println("Loading model ...");
@@ -22,7 +25,7 @@ public class Main {
         System.out.println("Normals: " + model.normals.size());
         System.out.println("Polygons: " + model.polygons.size());
 
-        DeletePolygons.deletePolygons(new Integer[]{1, 2, 3}, model, false);
+        DeletePolygons.deletePolygons(new Integer[]{1, 2, 3, 4}, model, true);
 
         System.out.println();
         System.out.println("After:");
